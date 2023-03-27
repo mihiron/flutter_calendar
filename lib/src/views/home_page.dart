@@ -16,12 +16,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   late final ValueNotifier<List<Event>> _selectedEvents;
   CalendarFormat _calendarFormat = CalendarFormat.month;
-  RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
-      .toggledOff; // Can be toggled on/off by longpressing a date
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   DateTime? _selectedDay;
-  DateTime? _rangeStart;
-  DateTime? _rangeEnd;
   final CustomCalendarBuilders customCalendarBuilders =
       CustomCalendarBuilders();
 
@@ -43,42 +39,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return kEvents[day] ?? [];
   }
 
-  List<Event> _getEventsForRange(DateTime start, DateTime end) {
-    // Implementation example
-    final days = daysInRange(start, end);
-    return [
-      for (final d in days) ..._getEventsForDay(d),
-    ];
-  }
-
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay.value = focusedDay;
-        _rangeStart = null; // Important to clean those
-        _rangeEnd = null;
-        _rangeSelectionMode = RangeSelectionMode.toggledOff;
       });
       _selectedEvents.value = _getEventsForDay(selectedDay);
-    }
-  }
-
-  void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
-    setState(() {
-      _selectedDay = null;
-      _focusedDay.value = focusedDay;
-      _rangeStart = start;
-      _rangeEnd = end;
-      _rangeSelectionMode = RangeSelectionMode.toggledOn;
-    });
-    // `start` or `end` could be null
-    if (start != null && end != null) {
-      _selectedEvents.value = _getEventsForRange(start, end);
-    } else if (start != null) {
-      _selectedEvents.value = _getEventsForDay(start);
-    } else if (end != null) {
-      _selectedEvents.value = _getEventsForDay(end);
     }
   }
 
@@ -122,14 +89,10 @@ class _MyHomePageState extends State<MyHomePage> {
             lastDay: kLastDay,
             focusedDay: _focusedDay.value,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            rangeStartDay: _rangeStart,
-            rangeEndDay: _rangeEnd,
             calendarFormat: _calendarFormat,
-            rangeSelectionMode: _rangeSelectionMode,
             eventLoader: _getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
             onDaySelected: _onDaySelected,
-            onRangeSelected: _onRangeSelected,
             onFormatChanged: (format) {
               if (_calendarFormat != format) {
                 setState(() {
