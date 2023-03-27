@@ -1,6 +1,7 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/src/utils/custom_calendar_builders.dart';
 import 'package:flutter_calendar/src/utils/table_calendar.dart';
 import 'package:flutter_calendar/src/views/widget/calendar_header.dart';
 import 'package:table_calendar/table_calendar.dart';
@@ -20,6 +21,9 @@ class _MyHomePageState extends State<MyHomePage> {
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
+  final CustomCalendarBuilders customCalendarBuilders =
+      CustomCalendarBuilders();
+
   @override
   void initState() {
     super.initState();
@@ -124,6 +128,10 @@ class _MyHomePageState extends State<MyHomePage> {
             onPageChanged: (focusedDay) {
               _focusedDay.value = focusedDay;
             },
+            calendarBuilders: CalendarBuilders(
+              dowBuilder: customCalendarBuilders.daysOfWeekBuilder,
+              defaultBuilder: customCalendarBuilders.defaultBuilder,
+            ),
           ),
         ],
       ),
