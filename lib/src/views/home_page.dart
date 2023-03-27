@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_calendar/src/utils/custom_calendar_builders.dart';
 import 'package:flutter_calendar/src/utils/table_calendar.dart';
 import 'package:flutter_calendar/src/views/widget/calendar_header.dart';
+import 'package:flutter_calendar/src/views/widget/date_picker.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -99,7 +100,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   onTodayButtonTap: () {
                     setState(() {
                       _focusedDay.value = DateTime.now();
+                      _selectedDay = DateTime.now();
                     });
+                  },
+                  onDatePicked: () async {
+                    final DateTime? datePicked =
+                        await DatePicker.show(context, _focusedDay.value);
+                    if (datePicked != null && datePicked != _focusedDay.value) {
+                      setState(() {
+                        _focusedDay.value = datePicked;
+                        _selectedDay = datePicked;
+                      });
+                    }
                   },
                 );
               }),
