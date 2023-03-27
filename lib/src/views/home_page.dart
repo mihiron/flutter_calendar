@@ -2,6 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/src/utils/table_calendar.dart';
+import 'package:flutter_calendar/src/views/widget/calendar_header.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class MyHomePage extends StatefulWidget {
@@ -15,14 +16,14 @@ class _MyHomePageState extends State<MyHomePage> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
   RangeSelectionMode _rangeSelectionMode = RangeSelectionMode
       .toggledOff; // Can be toggled on/off by longpressing a date
-  DateTime _focusedDay = DateTime.now();
+  final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   DateTime? _selectedDay;
   DateTime? _rangeStart;
   DateTime? _rangeEnd;
   @override
   void initState() {
     super.initState();
-    _selectedDay = _focusedDay;
+    _selectedDay = _focusedDay.value;
     _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
@@ -49,7 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
-        _focusedDay = focusedDay;
+        _focusedDay.value = focusedDay;
         _rangeStart = null; // Important to clean those
         _rangeEnd = null;
         _rangeSelectionMode = RangeSelectionMode.toggledOff;
@@ -61,7 +62,7 @@ class _MyHomePageState extends State<MyHomePage> {
   void _onRangeSelected(DateTime? start, DateTime? end, DateTime focusedDay) {
     setState(() {
       _selectedDay = null;
-      _focusedDay = focusedDay;
+      _focusedDay.value = focusedDay;
       _rangeStart = start;
       _rangeEnd = end;
       _rangeSelectionMode = RangeSelectionMode.toggledOn;
@@ -83,34 +84,48 @@ class _MyHomePageState extends State<MyHomePage> {
         centerTitle: true,
         title: const Text('カレンダー'),
       ),
-      body: TableCalendar<Event>(
-        locale: 'ja_JP',
-        firstDay: kFirstDay,
-        lastDay: kLastDay,
-        focusedDay: _focusedDay,
-        selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-        rangeStartDay: _rangeStart,
-        rangeEndDay: _rangeEnd,
-        calendarFormat: _calendarFormat,
-        rangeSelectionMode: _rangeSelectionMode,
-        eventLoader: _getEventsForDay,
-        startingDayOfWeek: StartingDayOfWeek.monday,
-        calendarStyle: const CalendarStyle(
-          // Use `CalendarStyle` to customize the UI
-          outsideDaysVisible: false,
-        ),
-        onDaySelected: _onDaySelected,
-        onRangeSelected: _onRangeSelected,
-        onFormatChanged: (format) {
-          if (_calendarFormat != format) {
-            setState(() {
-              _calendarFormat = format;
-            });
-          }
-        },
-        onPageChanged: (focusedDay) {
-          _focusedDay = focusedDay;
-        },
+      body: Column(
+        children: [
+          ValueListenableBuilder<DateTime>(
+              valueListenable: _focusedDay,
+              builder: (context, value, _) {
+                return CalendarHeader(
+                  focusedDay: value,
+                  locale: 'ja_JP',
+                  onTodayButtonTap: () {
+                    setState(() {
+                      _focusedDay.value = DateTime.now();
+                    });
+                  },
+                );
+              }),
+          TableCalendar<Event>(
+            locale: 'ja_JP',
+            headerVisible: false,
+            firstDay: kFirstDay,
+            lastDay: kLastDay,
+            focusedDay: _focusedDay.value,
+            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            rangeStartDay: _rangeStart,
+            rangeEndDay: _rangeEnd,
+            calendarFormat: _calendarFormat,
+            rangeSelectionMode: _rangeSelectionMode,
+            eventLoader: _getEventsForDay,
+            startingDayOfWeek: StartingDayOfWeek.monday,
+            onDaySelected: _onDaySelected,
+            onRangeSelected: _onRangeSelected,
+            onFormatChanged: (format) {
+              if (_calendarFormat != format) {
+                setState(() {
+                  _calendarFormat = format;
+                });
+              }
+            },
+            onPageChanged: (focusedDay) {
+              _focusedDay.value = focusedDay;
+            },
+          ),
+        ],
       ),
     );
   }
