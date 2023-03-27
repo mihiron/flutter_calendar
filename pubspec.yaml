@@ -40,6 +40,8 @@ dependencies:
   table_calendar: ^3.0.9
   intl: ^0.18.0
 
+  dart_code_metrics: ^5.7.0
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

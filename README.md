@@ -1,16 +1,6 @@
-# flutter_calendar
+## dart_code_metrics
+# 未使用ファイルを抽出する
+fvm flutter pub run dart_code_metrics:metrics check-unused-files lib
 
-A new Flutter project.
-
-## Getting Started
-
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# 未使用コードを抽出する
+fvm flutter pub run dart_code_metrics:metrics check-unused-code lib
