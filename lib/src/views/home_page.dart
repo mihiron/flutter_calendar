@@ -24,7 +24,6 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
     _selectedDay = _focusedDay.value;
-    _selectedEvents = ValueNotifier(_getEventsForDay(_selectedDay!));
   }
 
   @override
@@ -33,18 +32,12 @@ class _MyHomePageState extends State<MyHomePage> {
     super.dispose();
   }
 
-  List<Event> _getEventsForDay(DateTime day) {
-    // Implementation example
-    return kEvents[day] ?? [];
-  }
-
   void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
     if (!isSameDay(_selectedDay, selectedDay)) {
       setState(() {
         _selectedDay = selectedDay;
         _focusedDay.value = focusedDay;
       });
-      _selectedEvents.value = _getEventsForDay(selectedDay);
     }
   }
 
@@ -89,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
             focusedDay: _focusedDay.value,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
             calendarFormat: CalendarFormat.month,
-            eventLoader: _getEventsForDay,
+            eventLoader: getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
             onDaySelected: _onDaySelected,
             onPageChanged: (focusedDay) {

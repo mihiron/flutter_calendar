@@ -23,6 +23,11 @@ final kEvents = LinkedHashMap<DateTime, List<Event>>(
   hashCode: getHashCode,
 )..addAll(_kEventSource);
 
+List<Event> getEventsForDay(DateTime day) {
+  // Implementation example
+  return kEvents[day] ?? [];
+}
+
 // ignore: prefer_for_elements_to_map_fromiterable
 final _kEventSource = Map.fromIterable(List.generate(50, (index) => index),
     key: (item) => DateTime.utc(kFirstDay.year, kFirstDay.month, item * 5),
