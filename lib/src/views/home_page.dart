@@ -15,7 +15,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   late final ValueNotifier<List<Event>> _selectedEvents;
-  CalendarFormat _calendarFormat = CalendarFormat.month;
   final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
   DateTime? _selectedDay;
   final CustomCalendarBuilders customCalendarBuilders =
@@ -89,17 +88,10 @@ class _MyHomePageState extends State<MyHomePage> {
             lastDay: kLastDay,
             focusedDay: _focusedDay.value,
             selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
-            calendarFormat: _calendarFormat,
+            calendarFormat: CalendarFormat.month,
             eventLoader: _getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
             onDaySelected: _onDaySelected,
-            onFormatChanged: (format) {
-              if (_calendarFormat != format) {
-                setState(() {
-                  _calendarFormat = format;
-                });
-              }
-            },
             onPageChanged: (focusedDay) {
               _focusedDay.value = focusedDay;
             },
