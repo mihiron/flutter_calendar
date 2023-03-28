@@ -38,6 +38,13 @@ dependencies:
 
   flutter_riverpod: ^2.3.2
 
+  # DB
+  drift: ^2.6.0
+  sqlite3_flutter_libs: ^0.5.13
+  path_provider: ^2.0.14
+  path: ^1.8.2
+  drift_db_viewer: ^2.0.0
+
   # UI
   table_calendar: ^3.0.9
   intl: ^0.18.0
@@ -47,6 +54,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+
+  drift_dev: ^2.6.0
+  build_runner: ^2.3.3
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
