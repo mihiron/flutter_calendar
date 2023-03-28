@@ -5,42 +5,33 @@ import 'package:flutter_calendar/src/utils/custom_calendar_builders.dart';
 import 'package:flutter_calendar/src/utils/table_calendar.dart';
 import 'package:flutter_calendar/src/views/widget/calendar_header.dart';
 import 'package:flutter_calendar/src/views/widget/date_picker.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:table_calendar/table_calendar.dart';
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
-}
+final focusedDayProvider = StateProvider<ValueNotifier<DateTime>>((ref) {
+  return ValueNotifier(DateTime.now());
+});
 
-class _MyHomePageState extends State<MyHomePage> {
-  final ValueNotifier<DateTime> _focusedDay = ValueNotifier(DateTime.now());
-  DateTime? _selectedDay;
+final seletedDayProvider = StateProvider<DateTime>((ref) {
+  final selectedDay = ref.read(focusedDayProvider).value;
+  return selectedDay;
+});
+
+class MyHomePage extends ConsumerWidget {
+  MyHomePage({super.key});
+
   final CustomCalendarBuilders customCalendarBuilders =
       CustomCalendarBuilders();
 
   @override
-  void initState() {
-    super.initState();
-    _selectedDay = _focusedDay.value;
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void _onDaySelected(DateTime selectedDay, DateTime focusedDay) {
-    if (!isSameDay(_selectedDay, selectedDay)) {
-      setState(() {
-        _selectedDay = selectedDay;
-        _focusedDay.value = focusedDay;
-      });
+  Widget build(BuildContext context, WidgetRef ref) {
+    void onDaySelected(DateTime selectedDay, DateTime focusedDay) {
+      if (!isSameDay(ref.read(seletedDayProvider), selectedDay)) {
+        ref.read(seletedDayProvider.notifier).state = selectedDay;
+        ref.read(focusedDayProvider.notifier).state.value = focusedDay;
+      }
     }
-  }
 
-  @override
-  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         centerTitle: true,
@@ -49,25 +40,25 @@ class _MyHomePageState extends State<MyHomePage> {
       body: Column(
         children: [
           ValueListenableBuilder<DateTime>(
-              valueListenable: _focusedDay,
+              valueListenable: ref.watch(focusedDayProvider),
               builder: (context, value, _) {
                 return CalendarHeader(
                   focusedDay: value,
                   locale: 'ja_JP',
                   onTodayButtonTap: () {
-                    setState(() {
-                      _focusedDay.value = DateTime.now();
-                      _selectedDay = DateTime.now();
-                    });
+                    ref.read(focusedDayProvider.notifier).state.value =
+                        DateTime.now();
+                    ref.read(seletedDayProvider.notifier).state =
+                        DateTime.now();
                   },
                   onDatePicked: () async {
-                    final DateTime? datePicked =
-                        await DatePicker.show(context, _focusedDay.value);
-                    if (datePicked != null && datePicked != _focusedDay.value) {
-                      setState(() {
-                        _focusedDay.value = datePicked;
-                        _selectedDay = datePicked;
-                      });
+                    final DateTime? datePicked = await DatePicker.show(
+                        context, ref.read(focusedDayProvider).value);
+                    if (datePicked != null &&
+                        datePicked != ref.read(focusedDayProvider).value) {
+                      ref.read(focusedDayProvider.notifier).state.value =
+                          datePicked;
+                      ref.read(seletedDayProvider.notifier).state = datePicked;
                     }
                   },
                 );
@@ -77,14 +68,15 @@ class _MyHomePageState extends State<MyHomePage> {
             headerVisible: false,
             firstDay: kFirstDay,
             lastDay: kLastDay,
-            focusedDay: _focusedDay.value,
-            selectedDayPredicate: (day) => isSameDay(_selectedDay, day),
+            focusedDay: ref.watch(focusedDayProvider).value,
+            selectedDayPredicate: (day) =>
+                isSameDay(ref.watch(seletedDayProvider), day),
             calendarFormat: CalendarFormat.month,
             eventLoader: getEventsForDay,
             startingDayOfWeek: StartingDayOfWeek.monday,
-            onDaySelected: _onDaySelected,
+            onDaySelected: onDaySelected,
             onPageChanged: (focusedDay) {
-              _focusedDay.value = focusedDay;
+              ref.read(focusedDayProvider.notifier).state.value = focusedDay;
             },
             calendarBuilders: CalendarBuilders(
               dowBuilder: customCalendarBuilders.daysOfWeekBuilder,
