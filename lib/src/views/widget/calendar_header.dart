@@ -39,7 +39,7 @@ class CalendarHeader extends StatelessWidget {
                 width: 120.0,
                 child: Text(
                   headerText,
-                  style: const TextStyle(fontSize: 22.0),
+                  style: const TextStyle(fontSize: 20.0),
                 ),
               ),
               IconButton(

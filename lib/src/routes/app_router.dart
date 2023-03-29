@@ -1,4 +1,8 @@
+import 'package:drift_db_viewer/drift_db_viewer.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/src/services/local/app_database.dart';
+import 'package:flutter_calendar/src/views/add_edit_event_page.dart';
+import 'package:flutter_calendar/src/views/daily_page.dart';
 import 'package:flutter_calendar/src/views/home_page.dart';
 
 import 'app_routes.dart';
@@ -8,6 +12,12 @@ class AppRouter {
     switch (settings.name) {
       case AppRoutes.home:
         return _buildRoute(MyHomePage());
+      case AppRoutes.daily:
+        return _buildPageRoute(const DailyPage(), settings: settings);
+      case AppRoutes.addEditEvent:
+        return _buildRoute(AddEditEventPage());
+      case AppRoutes.driftDbViewer:
+        return _buildRoute(DriftDbViewer(settings.arguments as AppDatabase));
 
       default:
         return null;
@@ -23,6 +33,15 @@ class AppRouter {
       builder: (BuildContext context) => child,
       settings: settings,
       fullscreenDialog: fullscreenDialog,
+    );
+  }
+
+  static PageRouteBuilder _buildPageRoute(Widget child,
+      {RouteSettings? settings}) {
+    return PageRouteBuilder(
+      settings: settings,
+      opaque: false,
+      pageBuilder: (context, animation, secondaryAnimation) => child,
     );
   }
 }

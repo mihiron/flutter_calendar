@@ -1,4 +1,4 @@
-import 'package:flutter_calendar/src/services/local/datebase.dart';
+import 'package:flutter_calendar/src/services/local/database.dart';
 
 import 'local_repository.dart';
 

@@ -47,6 +47,9 @@ dependencies:
 
   # UI
   table_calendar: ^3.0.9
+  flutter_datetime_picker: ^1.5.1
+
+  # 言語対応
   intl: ^0.18.0
 
   dart_code_metrics: ^5.7.0

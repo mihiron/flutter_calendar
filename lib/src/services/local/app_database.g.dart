@@ -336,7 +336,7 @@ class EventsCompanion extends UpdateCompanion<Event> {
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   late final $EventsTable events = $EventsTable(this);
-  late final EventDao eventDao = EventDao(this as AppDatabase);
+  late final EventsDao eventsDao = EventsDao(this as AppDatabase);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();

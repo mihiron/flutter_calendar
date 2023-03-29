@@ -11,7 +11,7 @@ part 'app_database.g.dart';
 
 @DriftDatabase(
   tables: [Events],
-  daos: [EventDao],
+  daos: [EventsDao],
 )
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());

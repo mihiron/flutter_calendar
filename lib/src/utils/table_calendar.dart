@@ -18,14 +18,14 @@ class Event {
 /// Example events.
 ///
 /// Using a [LinkedHashMap] is highly recommended if you decide to use a map.
-final kEvents = LinkedHashMap<DateTime, List<Event>>(
+final _kEvents = LinkedHashMap<DateTime, List<Event>>(
   equals: isSameDay,
-  hashCode: getHashCode,
+  hashCode: _getHashCode,
 )..addAll(_kEventSource);
 
 List<Event> getEventsForDay(DateTime day) {
   // Implementation example
-  return kEvents[day] ?? [];
+  return _kEvents[day] ?? [];
 }
 
 // ignore: prefer_for_elements_to_map_fromiterable
@@ -40,7 +40,7 @@ final _kEventSource = Map.fromIterable(List.generate(50, (index) => index),
     ],
   });
 
-int getHashCode(DateTime key) {
+int _getHashCode(DateTime key) {
   return key.day * 1000000 + key.month * 10000 + key.year;
 }
 

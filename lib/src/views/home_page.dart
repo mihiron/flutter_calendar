@@ -1,6 +1,8 @@
 // Copyright 2019 Aleksander Woźniak
 // SPDX-License-Identifier: Apache-2.0
 import 'package:flutter/material.dart';
+import 'package:flutter_calendar/main.dart';
+import 'package:flutter_calendar/src/routes/app_routes.dart';
 import 'package:flutter_calendar/src/utils/custom_calendar_builders.dart';
 import 'package:flutter_calendar/src/utils/table_calendar.dart';
 import 'package:flutter_calendar/src/views/widget/calendar_header.dart';
@@ -25,10 +27,19 @@ class MyHomePage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localRepo = ref.read(localRepoProvider);
+    final eventRepo = localRepo.eventRepo;
+
     void onDaySelected(DateTime selectedDay, DateTime focusedDay) {
       if (!isSameDay(ref.read(seletedDayProvider), selectedDay)) {
         ref.read(seletedDayProvider.notifier).state = selectedDay;
         ref.read(focusedDayProvider.notifier).state.value = focusedDay;
+      } else {
+        Navigator.pushNamed(
+          context,
+          AppRoutes.daily,
+          arguments: ref.read(seletedDayProvider),
+        );
       }
     }
 
