@@ -15,10 +15,6 @@ class LocalEventRepository {
     return eventsDao.watchAllEvents();
   }
 
-  Future<List<Event>> getEventsForDay(DateTime day) {
-    return eventsDao.getEventsForDay(day);
-  }
-
   Future<void> createEvent(EventsCompanion event) {
     return eventsDao.createEvent(event);
   }
@@ -30,23 +26,4 @@ class LocalEventRepository {
   Future<void> deleteEvent(int id) {
     return eventsDao.deleteEventById(id);
   }
-
-  // Future<Map<DateTime, List<Event>>> getEventsByDate() async {
-  //   final events = await eventsDao.getAllEvents();
-  //   final Map<DateTime, List<Event>> eventsByDate = {};
-  //   for (final event in events) {
-  //     final date = DateTime.parse(event.start.toString());
-  //     final eventsOnDate = eventsByDate[date] ?? [];
-  //     eventsByDate[date] = eventsOnDate;
-  //   }
-  //   return eventsByDate;
-  // }
 }
-
-// bool isSameDay(DateTime? a, DateTime? b) {
-//   if (a == null || b == null) {
-//     return false;
-//   }
-
-//   return a.year == b.year && a.month == b.month && a.day == b.day;
-// }

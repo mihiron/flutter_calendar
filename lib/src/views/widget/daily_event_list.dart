@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/main.dart';
 import 'package:flutter_calendar/src/routes/app_routes.dart';
+import 'package:flutter_calendar/src/views/provider.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
 class DailyEventList extends ConsumerWidget {
   const DailyEventList({Key? key, required this.date}) : super(key: key);
@@ -9,24 +10,10 @@ class DailyEventList extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    List<List> eventList = [
-      ['title1', true, '', ''],
-      ['title2', false, '10:00', '12:00'],
-      ['title3', false, '13:00', '18:30'],
-    ];
+    final events = ref.watch(
+        allEventsListLinkedHashMapProvider)[ref.watch(selectedDayProvider)]!;
 
-    final localRepo = ref.read(localRepoProvider);
-    final eventRepo = localRepo.eventRepo;
-
-    final events = eventRepo.getEventsForDay(date);
-
-    // return FutureBuilder(builder: ((context, snapshot) {
-    //   return ListView.builder(itemBuilder: ((context, index) {
-    //     return ListTile();
-    //   }));
-    // }));
-
-    return eventList.isEmpty
+    return events.isEmpty
         ? const Center(
             child: Text(
               '予定がありません',
@@ -34,7 +21,7 @@ class DailyEventList extends ConsumerWidget {
             ),
           )
         : ListView.separated(
-            itemCount: eventList.length,
+            itemCount: events.length,
             padding: EdgeInsets.zero,
             separatorBuilder: (context, index) =>
                 const Divider(color: Colors.black, height: 2),
@@ -46,12 +33,16 @@ class DailyEventList extends ConsumerWidget {
                     SizedBox(
                       width: 60,
                       child: Center(
-                        child: eventList[index][1]
+                        child: events[index].isAllDay
                             ? const Text('終日')
                             : Column(
                                 children: [
-                                  Text(eventList[index][2]),
-                                  Text(eventList[index][3]),
+                                  Text(
+                                    DateFormat.Hm().format(events[index].start),
+                                  ),
+                                  Text(
+                                    DateFormat.Hm().format(events[index].end),
+                                  ),
                                 ],
                               ),
                       ),
@@ -64,7 +55,7 @@ class DailyEventList extends ConsumerWidget {
                     ),
                     Expanded(
                       child: Text(
-                        eventList[index][0],
+                        events[index].title.toString(),
                         style: const TextStyle(fontSize: 18),
                         overflow: TextOverflow.ellipsis,
                       ),

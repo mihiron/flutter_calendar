@@ -79,6 +79,7 @@ class AddEventPage extends ConsumerWidget {
               elevation: 0,
               child: TextField(
                 controller: titleController,
+                autofocus: true,
                 decoration: const InputDecoration(
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.blue),

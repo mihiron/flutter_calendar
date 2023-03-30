@@ -15,10 +15,6 @@ class EventsDao extends DatabaseAccessor<AppDatabase> with _$EventsDaoMixin {
     return select(events).watch();
   }
 
-  Future<List<Event>> getEventsForDay(DateTime day) {
-    return (select(events)..where((tbl) => tbl.start.equals(day))).get();
-  }
-
   Future<int> createEvent(EventsCompanion event) {
     return into(events).insert(event);
   }
