@@ -3,7 +3,6 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_calendar/main.dart';
 import 'package:flutter_calendar/src/common/enum.dart';
 import 'package:flutter_calendar/src/routes/app_routes.dart';
 import 'package:flutter_calendar/src/services/local/app_database.dart';

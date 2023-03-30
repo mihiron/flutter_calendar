@@ -1,7 +1,6 @@
 class AppRoutes {
   static const home = '/';
   static const daily = '/daily';
-  static const addEvent = '/addEvent';
-  static const editEvent = '/editEvent';
+  static const addEditEvent = '/addEditEvent';
   static const driftDbViewer = '/driftDbViewer';
 }

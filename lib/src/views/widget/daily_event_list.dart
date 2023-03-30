@@ -26,8 +26,13 @@ class DailyEventList extends ConsumerWidget {
             separatorBuilder: (context, index) =>
                 const Divider(color: Colors.black, height: 2),
             itemBuilder: (BuildContext context, int index) {
+              var event = ref.watch(allEventsListLinkedHashMapProvider)[
+                  ref.watch(selectedDayProvider)]![index];
               return InkWell(
-                onTap: () => Navigator.pushNamed(context, AppRoutes.editEvent),
+                onTap: () {
+                  ref.read(eventProvider.notifier).state = event;
+                  Navigator.pushNamed(context, AppRoutes.addEditEvent);
+                },
                 child: Row(
                   children: [
                     SizedBox(
