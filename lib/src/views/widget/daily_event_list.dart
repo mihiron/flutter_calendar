@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_calendar/main.dart';
+import 'package:flutter_calendar/src/routes/app_routes.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 class DailyEventList extends ConsumerWidget {
@@ -38,37 +39,38 @@ class DailyEventList extends ConsumerWidget {
             separatorBuilder: (context, index) =>
                 const Divider(color: Colors.black, height: 2),
             itemBuilder: (BuildContext context, int index) {
-              return Column(
-                children: [
-                  Row(
-                    children: [
-                      SizedBox(
-                        width: 60,
-                        child: Center(
-                          child: eventList[index][1]
-                              ? const Text('終日')
-                              : Column(
-                                  children: [
-                                    Text(eventList[index][2]),
-                                    Text(eventList[index][3]),
-                                  ],
-                                ),
-                        ),
+              return InkWell(
+                onTap: () => Navigator.pushNamed(context, AppRoutes.editEvent),
+                child: Row(
+                  children: [
+                    SizedBox(
+                      width: 60,
+                      child: Center(
+                        child: eventList[index][1]
+                            ? const Text('終日')
+                            : Column(
+                                children: [
+                                  Text(eventList[index][2]),
+                                  Text(eventList[index][3]),
+                                ],
+                              ),
                       ),
-                      Container(
-                        margin: const EdgeInsets.all(6),
-                        width: 6,
-                        height: 48,
-                        color: Colors.blue,
-                      ),
-                      Text(
+                    ),
+                    Container(
+                      margin: const EdgeInsets.all(6),
+                      width: 6,
+                      height: 48,
+                      color: Colors.blue,
+                    ),
+                    Expanded(
+                      child: Text(
                         eventList[index][0],
                         style: const TextStyle(fontSize: 18),
                         overflow: TextOverflow.ellipsis,
                       ),
-                    ],
-                  ),
-                ],
+                    ),
+                  ],
+                ),
               );
             },
           );

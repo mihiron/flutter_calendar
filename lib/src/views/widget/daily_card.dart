@@ -50,7 +50,7 @@ class DailyCard extends StatelessWidget {
                 IconButton(
                   icon: const Icon(Icons.add, color: Colors.blue),
                   onPressed: () =>
-                      Navigator.pushNamed(context, AppRoutes.addEditEvent),
+                      Navigator.pushNamed(context, AppRoutes.addEvent),
                 )
               ],
             ),

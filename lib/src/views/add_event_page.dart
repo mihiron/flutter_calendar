@@ -9,8 +9,8 @@ import 'package:intl/intl.dart';
 
 final isAllDayProvider = StateProvider<bool>((ref) => false);
 
-class AddEditEventPage extends ConsumerWidget {
-  AddEditEventPage({
+class AddEventPage extends ConsumerWidget {
+  AddEventPage({
     super.key,
     this.event,
   });
