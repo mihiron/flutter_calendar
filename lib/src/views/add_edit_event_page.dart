@@ -7,95 +7,81 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 // validation
-final isEnableSaveProvider = StateProvider((ref) => false);
+final isEnableSaveProvider = StateProvider.autoDispose((ref) => false);
 
 // タイトル
-final titleControllerProvider = StateProvider<TextEditingController>((ref) {
-  return TextEditingController(
-    text: (ref.watch(eventProvider) == null)
-        ? ''
-        : ref.watch(eventProvider)!.title,
-  );
-});
+final titleControllerProvider =
+    StateProvider.autoDispose<TextEditingController>((ref) =>
+        TextEditingController(
+            text: (ref.read(eventProvider) == null)
+                ? ''
+                : ref.read(eventProvider)!.title));
 
 // 終日
-final isAllDayProvider = StateProvider<bool>((ref) =>
-    (ref.watch(eventProvider) == null)
+final isAllDayProvider = StateProvider.autoDispose<bool>((ref) =>
+    (ref.read(eventProvider) == null)
         ? false
-        : ref.watch(eventProvider)!.isAllDay);
+        : ref.read(eventProvider)!.isAllDay);
 
 // 開始日
-final StateProvider<DateTime> startDateProvider = StateProvider((ref) {
-  if (ref.watch(eventProvider) == null) {
-    return ref.watch(selectedDayProvider);
-  } else {
-    return ref.watch(eventProvider)!.start;
-  }
-});
+final startDateProvider = StateProvider.autoDispose<DateTime>((ref) =>
+    (ref.read(eventProvider) == null)
+        ? ref.watch(selectedDayProvider)
+        : ref.read(eventProvider)!.start);
 
 // 終了日
-final StateProvider<DateTime> endDateProvider = StateProvider((ref) {
-  if (ref.watch(eventProvider) == null) {
-    return ref.watch(selectedDayProvider);
-  } else {
-    return ref.watch(eventProvider)!.end;
-  }
-});
+final endDateProvider = StateProvider.autoDispose<DateTime>((ref) =>
+    (ref.read(eventProvider) == null)
+        ? ref.watch(selectedDayProvider)
+        : ref.read(eventProvider)!.end);
 
 // 開始日時
-final StateProvider<DateTime> startDateTimeProvider = StateProvider((ref) {
-  if (ref.watch(eventProvider) == null) {
-    return DateTime(
-      ref.watch(selectedDayProvider).year,
-      ref.watch(selectedDayProvider).month,
-      ref.watch(selectedDayProvider).day,
-      DateTime.now().hour,
-      DateTime.now().minute,
-    ).add(Duration(minutes: 15 - DateTime.now().minute % 15));
-  } else {
-    return DateTime(
-      ref.watch(eventProvider)!.start.year,
-      ref.watch(eventProvider)!.start.month,
-      ref.watch(eventProvider)!.start.day,
-      DateTime.now().hour,
-      DateTime.now().minute,
-    ).add(Duration(minutes: 15 - DateTime.now().minute % 15));
-  }
-});
+final startDateTimeProvider = StateProvider.autoDispose<DateTime>(
+    (ref) => (ref.read(eventProvider) == null)
+        ? DateTime(
+            ref.watch(selectedDayProvider).year,
+            ref.watch(selectedDayProvider).month,
+            ref.watch(selectedDayProvider).day,
+            DateTime.now().hour,
+            DateTime.now().minute,
+          ).add(Duration(minutes: 15 - DateTime.now().minute % 15))
+        : DateTime(
+            ref.read(eventProvider)!.start.year,
+            ref.read(eventProvider)!.start.month,
+            ref.read(eventProvider)!.start.day,
+            DateTime.now().hour,
+            DateTime.now().minute,
+          ).add(Duration(minutes: 15 - DateTime.now().minute % 15)));
 
-// 修了日時
-final StateProvider<DateTime> endDateTimeProvider = StateProvider((ref) {
-  if (ref.watch(eventProvider) == null) {
-    return DateTime(
-      ref.watch(selectedDayProvider).year,
-      ref.watch(selectedDayProvider).month,
-      ref.watch(selectedDayProvider).day,
-      DateTime.now().hour,
-      DateTime.now().minute,
-    )
-        .add(Duration(minutes: 15 - DateTime.now().minute % 15))
-        .add(const Duration(hours: 1));
-  } else {
-    return DateTime(
-      ref.watch(eventProvider)!.end.year,
-      ref.watch(eventProvider)!.end.month,
-      ref.watch(eventProvider)!.end.day,
-      DateTime.now().hour,
-      DateTime.now().minute,
-    )
-        .add(Duration(minutes: 15 - DateTime.now().minute % 15))
-        .add(const Duration(hours: 1));
-  }
-});
+// 終了日時
+final endDateTimeProvider = StateProvider.autoDispose<DateTime>((ref) =>
+    (ref.read(eventProvider) == null)
+        ? DateTime(
+            ref.watch(selectedDayProvider).year,
+            ref.watch(selectedDayProvider).month,
+            ref.watch(selectedDayProvider).day,
+            DateTime.now().hour,
+            DateTime.now().minute,
+          )
+            .add(Duration(minutes: 15 - DateTime.now().minute % 15))
+            .add(const Duration(hours: 1))
+        : DateTime(
+            ref.read(eventProvider)!.end.year,
+            ref.read(eventProvider)!.end.month,
+            ref.read(eventProvider)!.end.day,
+            DateTime.now().hour,
+            DateTime.now().minute,
+          )
+            .add(Duration(minutes: 15 - DateTime.now().minute % 15))
+            .add(const Duration(hours: 1)));
 
-// タイトル
-final commentControllerProvider = StateProvider<TextEditingController>((ref) {
-  return TextEditingController(
-    text: (ref.watch(eventProvider) == null)
-        ? ''
-        : ref.watch(eventProvider)!.comment,
-  );
-});
+// コメント
+final commentControllerProvider =
+    StateProvider.autoDispose<TextEditingController>((ref) =>
+        TextEditingController(
+            text: (ref.read(eventProvider) == null)
+                ? ''
+                : ref.read(eventProvider)!.comment));
 
 class AddEditEventPage extends ConsumerWidget {
   AddEditEventPage({super.key});
@@ -111,131 +97,119 @@ class AddEditEventPage extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final localRepo = ref.read(localRepoProvider);
+    final eventRepo = localRepo.eventRepo;
+
+    final navigatorKey = GlobalKey<NavigatorState>();
+
+    final event = ref.read(eventProvider);
+    final isEnableSave = ref.watch(isEnableSaveProvider);
+    final titleController = ref.watch(titleControllerProvider);
+    final isAllDay = ref.watch(isAllDayProvider);
+    final startDate = ref.watch(startDateProvider);
+    final endDate = ref.watch(endDateProvider);
+    final startDateTime = ref.watch(startDateTimeProvider);
+    final endDateTime = ref.watch(endDateTimeProvider);
+    final commentController = ref.watch(commentControllerProvider);
+
     void validateSave() {
-      if ((ref.watch(eventProvider) == null &&
-              ref.watch(titleControllerProvider).text != '' &&
-              ref.watch(commentControllerProvider).text != '') ||
-          (ref.watch(eventProvider) != null &&
-              (ref.watch(titleControllerProvider).text !=
-                      ref.watch(eventProvider)!.title ||
-                  ref.watch(commentControllerProvider).text !=
-                      ref.watch(eventProvider)!.comment ||
-                  ref.watch(isAllDayProvider) !=
-                      ref.watch(eventProvider)!.isAllDay ||
-                  (ref.watch(eventProvider)!.isAllDay == true &&
-                      ref.watch(startDateProvider) !=
-                          ref.watch(eventProvider)!.start) ||
-                  (ref.watch(eventProvider)!.isAllDay == true &&
-                      ref.watch(endDateProvider) !=
-                          ref.watch(eventProvider)!.end) ||
-                  (ref.watch(eventProvider)!.isAllDay == false &&
-                      ref.watch(startDateTimeProvider) !=
-                          ref.watch(eventProvider)!.start) ||
-                  (ref.watch(eventProvider)!.isAllDay == false &&
-                      ref.watch(endDateTimeProvider) !=
-                          ref.watch(eventProvider)!.end)))) {
-        ref.read(isEnableSaveProvider.notifier).state = true;
-      } else {
-        ref.read(isEnableSaveProvider.notifier).state = false;
-      }
+      ((event == null &&
+                  titleController.text != '' &&
+                  commentController.text != '') ||
+              (event != null &&
+                  (titleController.text != event.title ||
+                      commentController.text != event.comment ||
+                      isAllDay != event.isAllDay ||
+                      (event.isAllDay == true && startDate != event.start) ||
+                      (event.isAllDay == true && endDate != event.end) ||
+                      (event.isAllDay == false &&
+                          startDateTime != event.start) ||
+                      (event.isAllDay == false && endDateTime != event.end))))
+          ? ref.read(isEnableSaveProvider.notifier).state = true
+          : ref.read(isEnableSaveProvider.notifier).state = false;
     }
 
     void showDatePicker(context, ifStart) {
-      showCupertinoModalPopup<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: <Widget>[
-                  Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: <Widget>[
-                        CupertinoButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 5.0,
-                          ),
-                          child: const Text('キャンセル'),
-                        ),
-                        CupertinoButton(
-                          onPressed: () {
-                            if (ifStart == true) {
-                              ref.read(startDateProvider.notifier).state =
-                                  newStartDate!;
-                              if (ref
-                                      .watch(startDateProvider)
-                                      .isAfter(ref.watch(endDateProvider)) ==
-                                  true) {
-                                ref.read(endDateProvider.notifier).state =
-                                    ref.watch(startDateProvider);
-                                // ref.read(endDateProvider.notifier) = ref.watch(startDateProvider);
-                              }
-                            } else {
-                              ref.read(endDateProvider.notifier).state =
-                                  newEndDate!;
-                              if (ref
-                                      .watch(startDateProvider)
-                                      .isAfter(ref.watch(endDateProvider)) ==
-                                  true) {
-                                ref.read(startDateProvider.notifier).state =
-                                    ref.watch(endDateProvider);
-                              }
-                            }
-                            validateSave();
-                            Navigator.pop(context);
-                          },
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 16.0,
-                            vertical: 5.0,
-                          ),
-                          child: const Text('完了'),
-                        )
-                      ],
-                    ),
-                  ),
-                  _bottomPicker(
-                    CupertinoDatePicker(
-                      mode: CupertinoDatePickerMode.date,
-                      initialDateTime: (ifStart == true)
-                          ? ref.watch(startDateTimeProvider)
-                          : ref.watch(endDateTimeProvider),
-                      onDateTimeChanged: (DateTime newDateTime) {
-                        if (ifStart == true) {
-                          newStartDate = newDateTime;
-                        } else {
-                          newEndDate = newDateTime;
-                        }
-                      },
-                    ),
-                  )
-                ]);
-          });
-    }
-
-    void showDateTimePicker(context, ifStart) {
-      showCupertinoModalPopup<void>(
-          context: context,
-          builder: (BuildContext context) {
-            return Column(mainAxisAlignment: MainAxisAlignment.end, children: <
-                Widget>[
+      showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
               Container(
                 decoration: const BoxDecoration(
                   color: Colors.white,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: <Widget>[
+                  children: [
+                    CupertinoButton(
+                      onPressed: () => Navigator.pop(context),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 5.0,
+                      ),
+                      child: const Text('キャンセル'),
+                    ),
                     CupertinoButton(
                       onPressed: () {
+                        if (ifStart == true) {
+                          ref.read(startDateProvider.notifier).state =
+                              newStartDate!;
+                          if (startDate.isAfter(endDate) == true) {
+                            ref.read(endDateProvider.notifier).state =
+                                startDate;
+                          }
+                        } else {
+                          ref.read(endDateProvider.notifier).state =
+                              newEndDate!;
+                          if (startDate.isAfter(endDate) == true) {
+                            ref.read(startDateProvider.notifier).state =
+                                endDate;
+                          }
+                        }
+                        validateSave();
                         Navigator.pop(context);
                       },
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16.0,
+                        vertical: 5.0,
+                      ),
+                      child: const Text('完了'),
+                    )
+                  ],
+                ),
+              ),
+              _bottomPicker(
+                CupertinoDatePicker(
+                  mode: CupertinoDatePickerMode.date,
+                  initialDateTime:
+                      (ifStart == true) ? startDateTime : endDateTime,
+                  onDateTimeChanged: (DateTime newDateTime) => (ifStart == true)
+                      ? newStartDate = newDateTime
+                      : newEndDate = newDateTime,
+                ),
+              )
+            ],
+          );
+        },
+      );
+    }
+
+    void showDateTimePicker(context, ifStart) {
+      showCupertinoModalPopup(
+        context: context,
+        builder: (BuildContext context) {
+          return Column(
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                decoration: const BoxDecoration(color: Colors.white),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    CupertinoButton(
+                      onPressed: () => Navigator.pop(context),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 16.0,
                         vertical: 5.0,
@@ -247,24 +221,16 @@ class AddEditEventPage extends ConsumerWidget {
                         if (ifStart == true) {
                           ref.read(startDateTimeProvider.notifier).state =
                               newStartDateTime!;
-                          if (ref
-                                  .watch(startDateTimeProvider)
-                                  .isAfter(ref.watch(endDateTimeProvider)) ==
-                              true) {
-                            ref.read(endDateTimeProvider.notifier).state = ref
-                                .watch(startDateTimeProvider)
-                                .add(const Duration(hours: 1));
+                          if (startDateTime.isAfter(endDateTime) == true) {
+                            ref.read(endDateTimeProvider.notifier).state =
+                                startDateTime.add(const Duration(hours: 1));
                           }
                         } else {
                           ref.read(endDateTimeProvider.notifier).state =
                               newEndDateTime!;
-                          if (ref
-                                  .watch(startDateTimeProvider)
-                                  .isAfter(ref.watch(endDateTimeProvider)) ==
-                              true) {
-                            ref.read(startDateTimeProvider.notifier).state = ref
-                                .watch(endDateTimeProvider)
-                                .add(const Duration(hours: -1));
+                          if (startDateTime.isAfter(endDateTime) == true) {
+                            ref.read(startDateTimeProvider.notifier).state =
+                                endDateTime.add(const Duration(hours: -1));
                           }
                         }
                         validateSave();
@@ -282,28 +248,20 @@ class AddEditEventPage extends ConsumerWidget {
               _bottomPicker(
                 CupertinoDatePicker(
                   mode: CupertinoDatePickerMode.dateAndTime,
-                  initialDateTime: (ifStart == true)
-                      ? ref.watch(startDateTimeProvider)
-                      : ref.watch(endDateTimeProvider),
+                  initialDateTime:
+                      (ifStart == true) ? startDateTime : endDateTime,
                   minuteInterval: 15,
                   use24hFormat: true,
-                  onDateTimeChanged: (DateTime newDateTime) {
-                    if (ifStart == true) {
-                      newStartDateTime = newDateTime;
-                    } else {
-                      newEndDateTime = newDateTime;
-                    }
-                  },
+                  onDateTimeChanged: (DateTime newDateTime) => (ifStart == true)
+                      ? newStartDateTime = newDateTime
+                      : newEndDateTime = newDateTime,
                 ),
               )
-            ]);
-          });
+            ],
+          );
+        },
+      );
     }
-
-    final localRepo = ref.read(localRepoProvider);
-    final eventRepo = localRepo.eventRepo;
-
-    final navigatorKey = GlobalKey<NavigatorState>();
 
     return Scaffold(
       key: navigatorKey,
@@ -331,41 +289,31 @@ class AddEditEventPage extends ConsumerWidget {
             );
           },
         ),
-        title: Text((ref.watch(eventProvider) == null) ? '予定の追加' : '予定の編集'),
+        title: Text(event == null ? '予定の追加' : '予定の編集'),
         actions: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: ElevatedButton(
               onPressed: () async {
-                if (ref.watch(isEnableSaveProvider) == true) {
-                  if (ref.watch(eventProvider) == null) {
-                    await eventRepo.createEvent(
-                      title: ref.watch(titleControllerProvider).text,
-                      comment: ref.watch(commentControllerProvider).text,
-                      isAllDay: ref.watch(isAllDayProvider),
-                      start: (ref.watch(isAllDayProvider) == true)
-                          ? ref.watch(startDateProvider)
-                          : ref.watch(startDateTimeProvider),
-                      end: (ref.watch(isAllDayProvider) == true)
-                          ? ref.watch(endDateProvider)
-                          : ref.watch(endDateTimeProvider),
-                    );
-                  } else {
-                    await eventRepo.updateEvent(
-                      ref.watch(eventProvider)!.copyWith(
-                            id: ref.watch(eventProvider)!.id,
-                            title: ref.watch(titleControllerProvider).text,
-                            comment: ref.watch(commentControllerProvider).text,
-                            isAllDay: ref.watch(isAllDayProvider),
-                            start: (ref.watch(isAllDayProvider) == true)
-                                ? ref.watch(startDateProvider)
-                                : ref.watch(startDateTimeProvider),
-                            end: (ref.watch(isAllDayProvider) == true)
-                                ? ref.watch(endDateProvider)
-                                : ref.watch(endDateTimeProvider),
+                if (isEnableSave == true) {
+                  event == null
+                      ? await eventRepo.createEvent(
+                          title: titleController.text,
+                          comment: commentController.text,
+                          isAllDay: isAllDay,
+                          start: isAllDay == true ? startDate : startDateTime,
+                          end: isAllDay == true ? endDate : endDateTime)
+                      : await eventRepo.updateEvent(
+                          event.copyWith(
+                            id: event.id,
+                            title: titleController.text,
+                            comment: commentController.text,
+                            isAllDay: isAllDay,
+                            start: isAllDay == true ? startDate : startDateTime,
+                            end: isAllDay == true ? endDate : endDateTime,
                           ),
-                    );
-                  }
+                        );
+
                   Navigator.of(context).pop();
                 }
               },
@@ -376,9 +324,8 @@ class AddEditEventPage extends ConsumerWidget {
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.grey[300],
-                foregroundColor: (ref.watch(isEnableSaveProvider) == true)
-                    ? Colors.black
-                    : Colors.grey,
+                foregroundColor:
+                    isEnableSave == true ? Colors.black : Colors.grey,
               ),
               child: const Text('保存'),
             ),
@@ -396,7 +343,7 @@ class AddEditEventPage extends ConsumerWidget {
               child: Card(
                 elevation: 0,
                 child: TextField(
-                  controller: ref.watch(titleControllerProvider),
+                  controller: titleController,
                   autofocus: true,
                   focusNode: focusNode,
                   decoration: const InputDecoration(
@@ -420,10 +367,9 @@ class AddEditEventPage extends ConsumerWidget {
                     child: ListTile(
                       leading: const Text('終日'),
                       trailing: Switch(
-                        value: ref.watch(isAllDayProvider),
+                        value: isAllDay,
                         onChanged: (_) {
-                          ref.read(isAllDayProvider.notifier).state =
-                              !ref.watch(isAllDayProvider);
+                          ref.read(isAllDayProvider.notifier).state = !isAllDay;
                           validateSave();
                         },
                       ),
@@ -433,18 +379,15 @@ class AddEditEventPage extends ConsumerWidget {
                     height: 50,
                     child: ListTile(
                       onTap: () async {
-                        if (ref.watch(isAllDayProvider) == true) {
-                          showDatePicker(context, true);
-                        } else {
-                          showDateTimePicker(context, true);
-                        }
+                        isAllDay == true
+                            ? showDatePicker(context, true)
+                            : showDateTimePicker(context, true);
                       },
                       leading: const Text('開始'),
                       trailing: Text(
-                        (ref.watch(isAllDayProvider) == true)
-                            ? dateFormat.format(ref.watch(startDateProvider))
-                            : dateTimeFormat
-                                .format(ref.watch(startDateTimeProvider)),
+                        isAllDay == true
+                            ? dateFormat.format(startDate)
+                            : dateTimeFormat.format(startDateTime),
                       ),
                     ),
                   ),
@@ -452,18 +395,15 @@ class AddEditEventPage extends ConsumerWidget {
                     height: 50,
                     child: ListTile(
                       onTap: () async {
-                        if (ref.watch(isAllDayProvider) == true) {
-                          showDatePicker(context, false);
-                        } else {
-                          showDateTimePicker(context, false);
-                        }
+                        isAllDay == true
+                            ? showDatePicker(context, false)
+                            : showDateTimePicker(context, false);
                       },
                       leading: const Text('修了'),
                       trailing: Text(
-                        (ref.watch(isAllDayProvider) == true)
-                            ? dateFormat.format(ref.watch(endDateProvider))
-                            : dateTimeFormat
-                                .format(ref.watch(endDateTimeProvider)),
+                        isAllDay == true
+                            ? dateFormat.format(endDate)
+                            : dateTimeFormat.format(endDateTime),
                       ),
                     ),
                   ),
@@ -477,7 +417,7 @@ class AddEditEventPage extends ConsumerWidget {
               child: Card(
                 elevation: 0,
                 child: TextField(
-                  controller: ref.watch(commentControllerProvider),
+                  controller: commentController,
                   onChanged: (_) => validateSave(),
                   maxLines: 5,
                   decoration: const InputDecoration(
@@ -490,10 +430,8 @@ class AddEditEventPage extends ConsumerWidget {
                 ),
               ),
             ),
-            (ref.watch(eventProvider) == null)
-                ? Container()
-                : const SizedBox(height: 30),
-            (ref.watch(eventProvider) == null)
+            event == null ? Container() : const SizedBox(height: 30),
+            event == null
                 ? Container()
                 : GestureDetector(
                     onTap: () async {
@@ -513,8 +451,7 @@ class AddEditEventPage extends ConsumerWidget {
                               CupertinoDialogAction(
                                 child: const Text('削除'),
                                 onPressed: () async {
-                                  await eventRepo.deleteEvent(
-                                      ref.watch(eventProvider)!.id);
+                                  await eventRepo.deleteEvent(event.id);
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                 },
