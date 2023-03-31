@@ -117,14 +117,14 @@ class AddEditEventPage extends ConsumerWidget {
                   titleController.text != '' &&
                   commentController.text != '') ||
               (event != null &&
-                  (titleController.text != event.title ||
-                      commentController.text != event.comment ||
-                      isAllDay != event.isAllDay ||
-                      (event.isAllDay == true && startDate != event.start) ||
-                      (event.isAllDay == true && endDate != event.end) ||
+                  (event.title != titleController.text ||
+                      event.comment != commentController.text ||
+                      event.isAllDay != isAllDay ||
+                      (event.isAllDay == true && event.start != startDate) ||
+                      (event.isAllDay == true && event.end != endDate) ||
                       (event.isAllDay == false &&
-                          startDateTime != event.start) ||
-                      (event.isAllDay == false && endDateTime != event.end))))
+                          event.start != startDateTime) ||
+                      (event.isAllDay == false && event.end != endDateTime))))
           ? ref.read(isEnableSaveProvider.notifier).state = true
           : ref.read(isEnableSaveProvider.notifier).state = false;
     }
